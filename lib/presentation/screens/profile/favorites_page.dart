@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class FavoritesPage extends StatefulWidget {
   const FavoritesPage({super.key});
@@ -8,53 +9,78 @@ class FavoritesPage extends StatefulWidget {
 }
 
 class _FavoritesPageState extends State<FavoritesPage> {
-  // Sample favorites data - in a real app, this would come from a database or API
+  // Sample favorite items - in a real app, this would come from a database/state management
   final List<Map<String, dynamic>> favoriteItems = [
     {
-      'name': 'Pizza Palace',
-      'category': 'Italian',
-      'rating': 4.5,
-      'deliveryTime': '25-30 min',
-      'image': '🍕'
+      "name": "Royal Biryani House",
+      "type": "restaurant",
+      "rating": "4.6",
+      "cuisine": "Indian",
+      "image": "images/biryani.png",
     },
     {
-      'name': 'Burger Hub',
-      'category': 'American',
-      'rating': 4.2,
-      'deliveryTime': '20-25 min',
-      'image': '🍔'
+      "name": "Margherita Pizza",
+      "type": "dish",
+      "price": "₹299",
+      "restaurant": "Pizza Club",
+      "image": "images/pizza.png",
     },
     {
-      'name': 'Sushi Express',
-      'category': 'Japanese',
-      'rating': 4.8,
-      'deliveryTime': '30-35 min',
-      'image': '🍣'
+      "name": "Coffee Corner",
+      "type": "restaurant",
+      "rating": "4.8",
+      "cuisine": "Continental",
+      "image": "images/coffee.png",
     },
     {
-      'name': 'Taco Fiesta',
-      'category': 'Mexican',
-      'rating': 4.3,
-      'deliveryTime': '15-20 min',
-      'image': '🌮'
+      "name": "Classic Burger",
+      "type": "dish",
+      "price": "₹199",
+      "restaurant": "Burger Town",
+      "image": "images/burger.png",
     },
   ];
+
+  void _removeFavorite(int index) {
+    setState(() {
+      favoriteItems.removeAt(index);
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("Removed from favorites"),
+        duration: Duration(seconds: 2),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.green,
+        title: Text(
+          "My Favorites",
+          style: GoogleFonts.poppins(
+            fontWeight: FontWeight.w600,
+            color: Colors.white,
+          ),
+        ),
         centerTitle: true,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text("Favorites"),
       ),
       body: favoriteItems.isEmpty
           ? _buildEmptyState()
-          : _buildFavoritesList(),
+          : ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: favoriteItems.length,
+              itemBuilder: (context, index) {
+                final item = favoriteItems[index];
+                return _buildFavoriteCard(item, index);
+              },
+            ),
     );
   }
 
@@ -71,16 +97,17 @@ class _FavoritesPageState extends State<FavoritesPage> {
           const SizedBox(height: 16),
           Text(
             "No favorites yet",
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
+            style: GoogleFonts.poppins(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
               color: Colors.grey.shade600,
             ),
           ),
           const SizedBox(height: 8),
           Text(
-            "Start adding restaurants to your favorites!",
-            style: TextStyle(
+            "Start adding your favorite restaurants\nand dishes!",
+            textAlign: TextAlign.center,
+            style: GoogleFonts.poppins(
               fontSize: 14,
               color: Colors.grey.shade500,
             ),
@@ -90,112 +117,109 @@ class _FavoritesPageState extends State<FavoritesPage> {
     );
   }
 
-  Widget _buildFavoritesList() {
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: favoriteItems.length,
-      itemBuilder: (context, index) {
-        final item = favoriteItems[index];
-        return _buildFavoriteCard(item, index);
-      },
-    );
-  }
-
   Widget _buildFavoriteCard(Map<String, dynamic> item, int index) {
+    final isRestaurant = item["type"] == "restaurant";
+
     return Card(
-      margin: const EdgeInsets.only(bottom: 16),
+      elevation: 3,
+      margin: const EdgeInsets.only(bottom: 12),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(12),
         child: Row(
           children: [
-            // Restaurant Icon/Image
-            CircleAvatar(
-              radius: 30,
-              backgroundColor: Colors.green.shade100,
-              child: Text(
-                item['image'],
-                style: const TextStyle(fontSize: 24),
+            // Image
+            ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: Image.asset(
+                item["image"],
+                height: 70,
+                width: 70,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    height: 70,
+                    width: 70,
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade200,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Icon(
+                      isRestaurant ? Icons.restaurant : Icons.fastfood,
+                      color: Colors.grey.shade400,
+                      size: 30,
+                    ),
+                  );
+                },
               ),
             ),
-            const SizedBox(width: 16),
-            // Restaurant Details
+            const SizedBox(width: 12),
+
+            // Details
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    item['name'],
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                    item["name"],
+                    style: GoogleFonts.poppins(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                   const SizedBox(height: 4),
-                  Text(
-                    item['category'],
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey.shade600,
+                  if (isRestaurant) ...[
+                    Row(
+                      children: [
+                        const Icon(Icons.star, size: 14, color: Colors.amber),
+                        const SizedBox(width: 4),
+                        Text(
+                          item["rating"],
+                          style: GoogleFonts.poppins(fontSize: 12),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          "• ${item["cuisine"]}",
+                          style: GoogleFonts.poppins(
+                            fontSize: 12,
+                            color: Colors.grey.shade600,
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.star,
-                        size: 14,
-                        color: Colors.amber.shade600,
+                  ] else ...[
+                    Text(
+                      item["price"],
+                      style: GoogleFonts.poppins(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.green,
                       ),
-                      const SizedBox(width: 4),
-                      Text(
-                        item['rating'].toString(),
-                        style: const TextStyle(fontSize: 12),
-                      ),
-                      const SizedBox(width: 16),
-                      Icon(
-                        Icons.access_time,
-                        size: 14,
+                    ),
+                    Text(
+                      "from ${item["restaurant"]}",
+                      style: GoogleFonts.poppins(
+                        fontSize: 12,
                         color: Colors.grey.shade600,
                       ),
-                      const SizedBox(width: 4),
-                      Text(
-                        item['deliveryTime'],
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey.shade600,
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ],
               ),
             ),
-            // Remove from Favorites Button
+
+            // Remove button
             IconButton(
-              onPressed: () => _removeFromFavorites(index),
-              icon: Icon(
+              onPressed: () => _removeFavorite(index),
+              icon: const Icon(
                 Icons.favorite,
-                color: Colors.red.shade400,
+                color: Colors.red,
               ),
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  void _removeFromFavorites(int index) {
-    setState(() {
-      favoriteItems.removeAt(index);
-    });
-    
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text("Removed from favorites"),
-        duration: Duration(seconds: 2),
       ),
     );
   }

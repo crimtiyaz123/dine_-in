@@ -23,10 +23,6 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.green,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
         title: const Text("Track Order"),
         centerTitle: true,
       ),

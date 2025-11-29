@@ -128,10 +128,6 @@ class _DeliverySchedulePageState extends State<DeliverySchedulePage> {
             color: Colors.black,
           ),
         ),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
-        ),
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -242,7 +238,7 @@ class _DeliverySchedulePageState extends State<DeliverySchedulePage> {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: isSelected ? color.withOpacity(0.1) : Colors.white,
+          color: isSelected ? color.withValues(alpha: 0.1) : Colors.white,
           border: Border.all(
             color: isSelected ? color : Colors.grey.shade300,
             width: 2,

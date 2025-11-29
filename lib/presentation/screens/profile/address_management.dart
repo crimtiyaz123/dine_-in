@@ -90,10 +90,6 @@ class _AddressManagementPageState extends State<AddressManagementPage> {
           'Manage Addresses',
           style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
         ),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
@@ -325,8 +321,8 @@ class _AddressManagementPageState extends State<AddressManagementPage> {
     
     return Container(
       padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+                                  decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Icon(icon, color: color, size: 20),

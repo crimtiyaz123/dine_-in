@@ -15,11 +15,11 @@ class _SearchPageState extends State<SearchPage> {
   RangeValues priceRange = const RangeValues(0, 1000);
   double selectedRating = 0.0;
   String selectedDeliveryTime = "Any";
-  
+
   final List<String> cuisineTypes = [
     "All", "Indian", "Chinese", "Italian", "Mexican", "Continental", "Fast Food", "Desserts"
   ];
-  
+
   final List<String> deliveryTimeOptions = [
     "Any", "15 mins", "30 mins", "45 mins", "60 mins"
   ];
@@ -83,38 +83,39 @@ class _SearchPageState extends State<SearchPage> {
 
   List<Map<String, dynamic>> get filteredRestaurants {
     List<Map<String, dynamic>> filtered = List.from(allRestaurants);
-    
+
     // Filter by search query
     if (searchController.text.isNotEmpty) {
       filtered = filtered.where((restaurant) {
         return restaurant["name"].toString().toLowerCase().contains(
-          searchController.text.toLowerCase(),
-        ) || restaurant["cuisine"].toString().toLowerCase().contains(
-          searchController.text.toLowerCase(),
-        );
+              searchController.text.toLowerCase(),
+            ) ||
+            restaurant["cuisine"].toString().toLowerCase().contains(
+                  searchController.text.toLowerCase(),
+                );
       }).toList();
     }
-    
+
     // Filter by cuisine
     if (selectedFilter != "All") {
       filtered = filtered.where((restaurant) {
         return restaurant["cuisine"] == selectedFilter;
       }).toList();
     }
-    
+
     // Filter by price range
     filtered = filtered.where((restaurant) {
-      return restaurant["minPrice"] >= priceRange.start && 
-             restaurant["minPrice"] <= priceRange.end;
+      return restaurant["minPrice"] >= priceRange.start &&
+          restaurant["minPrice"] <= priceRange.end;
     }).toList();
-    
+
     // Filter by rating
     if (selectedRating > 0) {
       filtered = filtered.where((restaurant) {
         return double.parse(restaurant["rating"]) >= selectedRating;
       }).toList();
     }
-    
+
     // Filter by delivery time
     if (selectedDeliveryTime != "Any") {
       int maxTime = int.parse(selectedDeliveryTime.split(' ')[0]);
@@ -122,7 +123,7 @@ class _SearchPageState extends State<SearchPage> {
         return restaurant["deliveryTime"] <= maxTime;
       }).toList();
     }
-    
+
     return filtered;
   }
 
@@ -139,10 +140,6 @@ class _SearchPageState extends State<SearchPage> {
             color: Colors.black,
           ),
         ),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
-        ),
       ),
       body: Column(
         children: [
@@ -155,6 +152,7 @@ class _SearchPageState extends State<SearchPage> {
           ),
         ],
       ),
+      floatingActionButton: _cartButton(), // <-- Added Floating Cart Button
     );
   }
 
@@ -189,7 +187,7 @@ class _SearchPageState extends State<SearchPage> {
         itemBuilder: (context, index) {
           final cuisine = cuisineTypes[index];
           final isSelected = selectedFilter == cuisine;
-          
+
           return GestureDetector(
             onTap: () {
               setState(() {
@@ -385,7 +383,7 @@ class _SearchPageState extends State<SearchPage> {
                   ],
                 ),
                 const SizedBox(height: 20),
-                
+
                 // Price Range Filter
                 Text(
                   'Price Range',
@@ -411,9 +409,9 @@ class _SearchPageState extends State<SearchPage> {
                     });
                   },
                 ),
-                
+
                 const SizedBox(height: 20),
-                
+
                 // Rating Filter
                 Text(
                   'Minimum Rating',
@@ -429,16 +427,18 @@ class _SearchPageState extends State<SearchPage> {
                   max: 5,
                   divisions: 10,
                   activeColor: Colors.green,
-                  label: selectedRating == 0 ? 'Any' : '${selectedRating.toStringAsFixed(1)}+',
+                  label: selectedRating == 0
+                      ? 'Any'
+                      : '${selectedRating.toStringAsFixed(1)}+',
                   onChanged: (value) {
                     setState(() {
                       selectedRating = value;
                     });
                   },
                 ),
-                
+
                 const SizedBox(height: 20),
-                
+
                 // Delivery Time Filter
                 Text(
                   'Delivery Time',
@@ -479,9 +479,9 @@ class _SearchPageState extends State<SearchPage> {
                     );
                   }).toList(),
                 ),
-                
+
                 const Spacer(),
-                
+
                 // Apply Filters Button
                 SizedBox(
                   width: double.infinity,
@@ -527,6 +527,21 @@ class _SearchPageState extends State<SearchPage> {
           imagePath: restaurant["image"],
         ),
       ),
+    );
+  }
+
+  // Floating Cart Button
+  Widget _cartButton() {
+    return FloatingActionButton.extended(
+      onPressed: () {
+        // Navigate to Cart Page
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Cart clicked!")),
+        );
+      },
+      icon: const Icon(Icons.shopping_cart),
+      label: const Text("Cart"),
+      backgroundColor: Colors.green,
     );
   }
 }

@@ -169,10 +169,7 @@ class _OrderTrackingPageState extends State<OrderTrackingPage>
           ),
         ),
       ),
-      leading: IconButton(
-        icon: const Icon(Icons.arrow_back, color: Colors.white),
-        onPressed: () => Navigator.pop(context),
-      ),
+
       actions: [
         IconButton(
           icon: const Icon(Icons.phone, color: Colors.white),
@@ -350,7 +347,7 @@ class _OrderTrackingPageState extends State<OrderTrackingPage>
       child: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
+          color: color.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Icon(icon, color: color, size: 20),
@@ -408,7 +405,7 @@ class _OrderTrackingPageState extends State<OrderTrackingPage>
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: isCompleted ? step.color.withOpacity(0.1) : Colors.grey.shade200,
+                color: isCompleted ? step.color.withValues(alpha: 0.1) : Colors.grey.shade200,
                 shape: BoxShape.circle,
               ),
               child: Icon(
@@ -455,7 +452,7 @@ class _OrderTrackingPageState extends State<OrderTrackingPage>
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
-              color: step.color.withOpacity(0.1),
+              color: step.color.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Text(
@@ -507,7 +504,7 @@ class _OrderTrackingPageState extends State<OrderTrackingPage>
             {'name': 'Chicken Biryani', 'quantity': 2, 'price': '₹500'},
             {'name': 'Raita', 'quantity': 1, 'price': '₹35'},
             {'name': 'Papad', 'quantity': 2, 'price': '₹30'},
-          ].map((item) => _buildOrderItem(item)).toList(),
+          ].map(_buildOrderItem),
           const Divider(),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,

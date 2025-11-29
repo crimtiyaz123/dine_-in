@@ -287,7 +287,7 @@ class _PhoneLoginPageState extends State<PhoneLoginPage> {
                           });
                         },
                         onCountryChanged: (country) {
-                          print('Country changed to: ${country.name}');
+                          // Country changed to: ${country.name}
                         },
                       ),
                       const SizedBox(height: 30),

@@ -9,26 +9,26 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
-      primarySwatch: _createMaterialColor(AppColors.primary),
-      primaryColor: AppColors.primary,
-      scaffoldBackgroundColor: AppColors.scaffoldBackground,
-      colorScheme: ColorScheme.light(
+      colorScheme: ColorScheme.fromSeed(
+        seedColor: AppColors.primary,
+        brightness: Brightness.light,
         primary: AppColors.primary,
         secondary: AppColors.secondary,
         surface: AppColors.surface,
-        background: AppColors.background,
         error: AppColors.error,
         onPrimary: AppColors.white,
         onSecondary: AppColors.white,
         onSurface: AppColors.black,
-        onBackground: AppColors.black,
         onError: AppColors.white,
+        surfaceContainerHighest: AppColors.surface,
       ),
-      appBarTheme: const AppBarTheme(
+      scaffoldBackgroundColor: AppColors.scaffoldBackground,
+      appBarTheme: AppBarTheme(
         backgroundColor: AppColors.primary,
         foregroundColor: AppColors.white,
         elevation: 0,
         centerTitle: true,
+        surfaceTintColor: Colors.transparent,
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
@@ -64,20 +64,50 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
-      primarySwatch: _createMaterialColor(AppColors.primary),
-      primaryColor: AppColors.primary,
-      scaffoldBackgroundColor: const Color(0xFF121212),
-      colorScheme: ColorScheme.dark(
+      colorScheme: ColorScheme.fromSeed(
+        seedColor: AppColors.primary,
+        brightness: Brightness.dark,
         primary: AppColors.primary,
         secondary: AppColors.secondary,
         surface: const Color(0xFF1E1E1E),
-        background: const Color(0xFF121212),
         error: AppColors.error,
         onPrimary: AppColors.black,
         onSecondary: AppColors.black,
         onSurface: AppColors.white,
-        onBackground: AppColors.white,
         onError: AppColors.white,
+      ),
+      scaffoldBackgroundColor: const Color(0xFF121212),
+      appBarTheme: AppBarTheme(
+        backgroundColor: AppColors.primary,
+        foregroundColor: AppColors.white,
+        elevation: 0,
+        centerTitle: true,
+        surfaceTintColor: Colors.transparent,
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.primary,
+          foregroundColor: AppColors.white,
+          elevation: 2,
+          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppConstants.mediumBorderRadius),
+          ),
+        ),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppConstants.mediumBorderRadius),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderSide: const BorderSide(color: AppColors.grey),
+          borderRadius: BorderRadius.circular(AppConstants.mediumBorderRadius),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderSide: const BorderSide(color: AppColors.primary),
+          borderRadius: BorderRadius.circular(AppConstants.mediumBorderRadius),
+        ),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       ),
       textTheme: _buildTextTheme(),
     );
@@ -90,7 +120,7 @@ class AppTheme {
     for (int i = 0; i < opacities.length; i++) {
       swatch[(i + 1) * 100] = Color.lerp(Colors.white, color, opacities[i])!;
     }
-    return MaterialColor(color.value, swatch);
+    return MaterialColor(color.toARGB32(), swatch);
   }
 
   // Helper method to build text theme

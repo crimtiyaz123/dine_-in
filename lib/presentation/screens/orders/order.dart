@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:dine_in/core/services/widget_support.dart';
 import 'package:dine_in/presentation/screens/profile/promotional_codes.dart';
 import 'package:dine_in/presentation/screens/profile/delivery_schedule.dart';
 import 'package:dine_in/presentation/screens/profile/payment.dart';
@@ -86,10 +85,6 @@ class _OrderPageState extends State<OrderPage> {
       appBar: AppBar(
         backgroundColor: Colors.green,
         title: Text(widget.orderType == "delivery" ? 'Your Cart' : 'Table Order'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
         actions: [
           if (cartItems.isNotEmpty)
             IconButton(
@@ -665,31 +660,32 @@ class _OrderPageState extends State<OrderPage> {
   }
 
   void _applyPromoCode() async {
+    final currentContext = context;
     final promoCode = await Navigator.push(
-      context,
+      currentContext,
       MaterialPageRoute(
         builder: (context) => const PromotionalCodesPage(),
       ),
     );
 
-    if (promoCode != null) {
+    if (promoCode != null && mounted) {
       setState(() {
         appliedPromoCode = promoCode.code;
-        
+
         // Calculate discount based on promo code type
         if (promoCode.discountType == "percentage") {
           promoDiscount = (totalAmount * promoCode.discountValue) / 100;
         } else {
           promoDiscount = promoCode.discountValue;
         }
-        
+
         // Ensure discount doesn't exceed subtotal
         if (promoDiscount > totalAmount) {
           promoDiscount = totalAmount;
         }
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(
+      ScaffoldMessenger.of(currentContext).showSnackBar(
         SnackBar(
           content: Text('Promo code "${promoCode.code}" applied!'),
           backgroundColor: Colors.green,
@@ -727,20 +723,20 @@ class _OrderPageState extends State<OrderPage> {
     }
   }
 
-  void _changeTableSelection() async {
-    final tableNumber = await showDialog<String>(
+  void _changeTableSelection() {
+    showDialog<String>(
       context: context,
       builder: (context) => TableSelectionDialog(
         currentTable: selectedTable,
         restaurantName: widget.restaurantName ?? "Restaurant",
       ),
-    );
-
-    if (tableNumber != null) {
-      setState(() {
-        selectedTable = tableNumber;
-      });
-    }
+    ).then((tableNumber) {
+      if (tableNumber != null) {
+        setState(() {
+          selectedTable = tableNumber;
+        });
+      }
+    });
   }
 }
 

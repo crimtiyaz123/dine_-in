@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:dine_in/core/services/category_data.dart';
 import 'package:dine_in/config/app_colors.dart';
 import 'package:dine_in/presentation/screens/orders/order.dart';
-import 'package:dine_in/presentation/screens/restaurant/restaurant_detail.dart';
+import 'package:dine_in/presentation/screens/cart/cart_item.dart';
 import 'package:dine_in/presentation/screens/home/search_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -58,38 +58,92 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  final List<Map<String, String>> restaurants = [
+    {
+      "name": "Royal Biryani House",
+      "rating": "4.6",
+      "time": "30 mins",
+      "image": "images/biryani.png",
+      "cuisine": "Indian",
+    },
+    {
+      "name": "Pizza Club",
+      "rating": "4.4",
+      "time": "25 mins",
+      "image": "images/pizza.png",
+      "cuisine": "Italian",
+    },
+    {
+      "name": "Coffee Corner",
+      "rating": "4.8",
+      "time": "20 mins",
+      "image": "images/coffee.png",
+      "cuisine": "Continental",
+    },
+    {
+      "name": "Burger Town",
+      "rating": "4.3",
+      "time": "15 mins",
+      "image": "images/burger.png",
+      "cuisine": "Fast Food",
+    },
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _buildAppBar(),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _searchBar(),
-            const SizedBox(height: 12),
-            _promoBanner(),
-            const SizedBox(height: 20),
-            _sectionTitle("Categories"),
-            const SizedBox(height: 10),
-            _categoryList(),
-            const SizedBox(height: 10),
-            _cartButton(),
-            const SizedBox(height: 20),
-            _sectionTitle("Popular Restaurants"),
-            const SizedBox(height: 10),
-            _restaurantCard("Royal Biryani House", "4.6", "30 mins", "images/biryani.png"),
-            _restaurantCard("Pizza Club", "4.4", "25 mins", "images/pizza.png"),
-            _restaurantCard("Coffee Corner", "4.8", "20 mins", "images/coffee.png"),
-            const SizedBox(height: 20),
-          ],
-        ),
+      body: Stack(
+        children: [
+          SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _searchBar(),
+                const SizedBox(height: 12),
+                _promoBanner(),
+                const SizedBox(height: 20),
+                _sectionTitle("Categories"),
+                const SizedBox(height: 10),
+                _categoryList(),
+                const SizedBox(height: 20),
+                _sectionTitle("Popular Restaurants"),
+                const SizedBox(height: 10),
+                ...restaurants.map((r) => _restaurantCard(r)),
+                const SizedBox(height: 100),
+              ],
+            ),
+          ),
+
+          // Floating Cart Button
+          Positioned(
+            bottom: 16,
+            right: 16,
+            child: FloatingActionButton.extended(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>  CartItemPage(
+                      cartType: "delivery",
+                      restaurantName: "All Restaurants",
+                    ),
+                  ),
+                );
+              },
+              backgroundColor: Colors.green,
+              icon: const Icon(Icons.shopping_cart, color: Colors.white),
+              label: const Text(
+                'View Cart',
+                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
-
-  // ---- UI COMPONENTS ----
 
   AppBar _buildAppBar() {
     return AppBar(
@@ -133,8 +187,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _promoBanner() {
-    final PageController _pageController = PageController();
-    int _currentPage = 0;
+    final PageController pageController = PageController();
 
     final List<Map<String, dynamic>> promoOffers = [
       {
@@ -144,7 +197,6 @@ class _HomePageState extends State<HomePage> {
         "backgroundColor": Colors.red.shade600,
         "textColor": Colors.white,
       },
-    
       {
         "title": "20% OFF",
         "subtitle": "on Chinese cuisine",
@@ -160,11 +212,9 @@ class _HomePageState extends State<HomePage> {
       child: Stack(
         children: [
           PageView.builder(
-            controller: _pageController,
+            controller: pageController,
             onPageChanged: (index) {
-              setState(() {
-                _currentPage = index;
-              });
+              // Page changed to index
             },
             itemCount: promoOffers.length,
             itemBuilder: (context, index) {
@@ -195,8 +245,6 @@ class _HomePageState extends State<HomePage> {
                                     fontWeight: FontWeight.bold,
                                     color: offer["textColor"],
                                   ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
@@ -205,15 +253,10 @@ class _HomePageState extends State<HomePage> {
                                     fontSize: 11,
                                     color: offer["textColor"],
                                   ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
                                 ),
                                 const SizedBox(height: 6),
                                 Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 8,
-                                    vertical: 3,
-                                  ),
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                                   decoration: BoxDecoration(
                                     color: offer["textColor"].withOpacity(0.2),
                                     borderRadius: BorderRadius.circular(15),
@@ -225,8 +268,6 @@ class _HomePageState extends State<HomePage> {
                                       color: offer["textColor"],
                                       fontWeight: FontWeight.w600,
                                     ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
                               ],
@@ -237,7 +278,7 @@ class _HomePageState extends State<HomePage> {
                             width: 45,
                             height: 45,
                             decoration: BoxDecoration(
-                              color: offer["textColor"].withOpacity(0.2),
+                              color: offer["textColor"].withValues(alpha: 0.2),
                               shape: BoxShape.circle,
                             ),
                             child: Icon(
@@ -253,26 +294,6 @@ class _HomePageState extends State<HomePage> {
                 ),
               );
             },
-          ),
-          Positioned(
-            bottom: 10,
-            left: 0,
-            right: 0,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(
-                promoOffers.length,
-                (index) => Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 4),
-                  width: _currentPage == index ? 12 : 8,
-                  height: 8,
-                  decoration: BoxDecoration(
-                    color: _currentPage == index ? Colors.green : Colors.grey,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-              ),
-            ),
           ),
         ],
       ),
@@ -296,11 +317,7 @@ class _HomePageState extends State<HomePage> {
         physics: const BouncingScrollPhysics(),
         itemBuilder: (context, index) {
           final category = categories[index];
-          return _categoryItem(
-            category.id,
-            category.name!,
-            category.image!,
-          );
+          return _categoryItem(category.id, category.name!, category.image!);
         },
       ),
     );
@@ -308,19 +325,11 @@ class _HomePageState extends State<HomePage> {
 
   Widget _categoryItem(String id, String name, String imagePath) {
     final isSelected = selectedCategoryId == id;
-    
     return GestureDetector(
       onTap: () {
         setState(() {
-          if (selectedCategoryId == id) {
-            selectedCategoryId = null; // Deselect if already selected
-          } else {
-            selectedCategoryId = id; // Select new category
-          }
+          selectedCategoryId = id; // Only border/circle color changes
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(isSelected ? 'Deselected $name' : 'Browsing $name items...')),
-        );
       },
       child: Container(
         width: 80,
@@ -352,7 +361,7 @@ class _HomePageState extends State<HomePage> {
                     return Icon(
                       Icons.restaurant, 
                       color: isSelected ? Colors.white : AppColors.categorySelected, 
-                      size: 32
+                      size: 32,
                     );
                   },
                 ),
@@ -376,108 +385,62 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _cartButton() {
-    return Align(
-      alignment: Alignment.centerRight,
-      child: FloatingActionButton.extended(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const OrderPage(
-                orderType: "delivery",
-                restaurantName: "Restaurant",
-              ),
-            ),
-          );
-        },
-        backgroundColor: Colors.green,
-        icon: const Icon(Icons.shopping_cart, color: Colors.white),
-        label: const Text(
-          'Cart',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-        ),
-      ),
-    );
-  }
-
-
-
-  Widget _restaurantCard(String name, String rating, String time, String img) {
+  Widget _restaurantCard(Map<String, String> restaurant) {
     return GestureDetector(
-      onTap: () => _navigateToRestaurantDetail(name, rating, time, img),
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => OrderPage(
+              orderType: "delivery",
+              restaurantName: restaurant["name"]!,
+            ),
+          ),
+        );
+      },
       child: Card(
         elevation: 4,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         margin: const EdgeInsets.only(bottom: 12),
-        child: Column(
+        child: Row(
           children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(16),
-                  child: Image.asset(img, height: 80, width: 80, fit: BoxFit.cover),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
+            ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: Image.asset(
+                restaurant["image"]!,
+                height: 80,
+                width: 80,
+                fit: BoxFit.cover,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    restaurant["name"]!,
+                    style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w600),
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
                     children: [
+                      Icon(Icons.star, size: 16, color: Colors.amber),
+                      const SizedBox(width: 2),
                       Text(
-                        name, 
-                        style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w600),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                        "${restaurant["rating"]} • ${restaurant["time"]}",
+                        style: GoogleFonts.poppins(fontSize: 12),
                       ),
-                      const SizedBox(height: 4),
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.star, size: 16, color: Colors.amber),
-                          const SizedBox(width: 2),
-                          Expanded(
-                            child: Text(
-                              "$rating • $time", 
-                              style: GoogleFonts.poppins(fontSize: 12),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
-                      )
                     ],
                   ),
-                )
-              ],
+                  Text(
+                    restaurant["cuisine"]!,
+                    style: GoogleFonts.poppins(fontSize: 12, color: Colors.grey[600]),
+                  ),
+                ],
+              ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-
-  void _navigateToRestaurantDetail(String name, String rating, String time, String img) {
-    String cuisine = "Multi-Cuisine"; // Default cuisine
-    if (name.toLowerCase().contains("biryani")) {
-      cuisine = "Indian";
-    } else if (name.toLowerCase().contains("pizza")) {
-      cuisine = "Italian";
-    } else if (name.toLowerCase().contains("coffee")) {
-      cuisine = "Continental";
-    } else if (name.toLowerCase().contains("burger")) {
-      cuisine = "Fast Food";
-    }
-    
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => RestaurantDetailPage(
-          restaurantName: name,
-          rating: rating,
-          deliveryTime: time,
-          cuisine: cuisine,
-          imagePath: img,
         ),
       ),
     );
