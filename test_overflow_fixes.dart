@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
         useMaterial3: true,
       ),
-      home: const MainNavigation(),
+      home: const Onboarding (),
       debugShowCheckedModeBanner: false,
     );
   }
